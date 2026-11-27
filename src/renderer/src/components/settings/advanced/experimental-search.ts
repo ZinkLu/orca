@@ -250,7 +250,9 @@ function isOptInOnlyExperimentKey(key: string): key is OptInOnlyExperimentKey {
 const getAvailableExperimentalSearchEntries = createLocalizedCatalog(
   (): [string, SettingsSearchEntry][] =>
     Object.entries(getExperimentalSearchEntry()).filter(
-      ([key]) => key !== 'sharedCodexServers' || sharedCodexServersSettingAvailable()
+      ([key]) =>
+        (key !== 'sharedCodexServers' || sharedCodexServersSettingAvailable()) &&
+        (key !== 'ptyFloatPill' || !isWebClientLocation())
     )
 )
 

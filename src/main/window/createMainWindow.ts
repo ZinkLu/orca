@@ -19,6 +19,7 @@ import { clearTrustedUIRendererWebContentsId, setTrustedUIRendererWebContentsId 
 import { flushUnsavedCloudSessions } from '../orca-profiles/cloud-session/profile-cloud-session-owner'
 import type { NativeSettingsProjection } from '../core-desktop/native-settings-projection'
 import { closeDashboardPopout } from './dashboard-popout-window'
+import { closePtyFloatPillWindow } from './pty-float-pill-window'
 import { closeWorkspaceSpaceWindow } from './workspace-space-window'
 import { installMainWindowCloseLifecycle } from './main-window/main-window-close-lifecycle'
 import type {
@@ -248,6 +249,7 @@ export function createMainWindow(
 
   mainWindow.on('closed', () => {
     closeDashboardPopout()
+    closePtyFloatPillWindow()
     closeWorkspaceSpaceWindow()
     state.clearInitialRevealFallbackTimer()
     closeLifecycle.dispose()

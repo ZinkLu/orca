@@ -1303,6 +1303,16 @@ body[data-modal-overlay-open]
   overflow: hidden;
 }
 
+html.pty-float-pill-window,
+html.pty-float-pill-window body {
+  background: transparent;
+}
+
+.pty-float-pill-drag {
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
 .app-layout {
   display: flex;
   flex-direction: column;

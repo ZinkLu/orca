@@ -17,6 +17,7 @@ import { AgentDashboardExperimentalSetting } from '../../dashboard/settings/Agen
 import { EphemeralVmsExperimentalSetting } from '../virtual-machines/recipes/EphemeralVmsExperimentalSetting'
 import { AppRailExperimentalSetting } from '../../app-rail/AppRailExperimentalSetting'
 import { PtyFloatPillExperimentalSetting } from '../../pty-float-pill/PtyFloatPillExperimentalSetting'
+import { isWebClientLocation } from '@/app-shell/platform/web-client-location'
 import { WslHostsExperimentalSetting } from '../wsl/hosts/WslHostsExperimentalSetting'
 import { wslHostsAvailable } from '../../../runtime/hosts/wsl/use-wsl-hosts-enabled'
 import {
@@ -63,9 +64,9 @@ export function ExperimentalPane({
     getExperimentalSearchEntry().newWorktreeCardStyle
   ])
   const showAppRail = matchesSettingsSearch(searchQuery, [getExperimentalSearchEntry().appRail])
-  const showPtyFloatPill = matchesSettingsSearch(searchQuery, [
-    getExperimentalSearchEntry().ptyFloatPill
-  ])
+  const showPtyFloatPill =
+    !isWebClientLocation() &&
+    matchesSettingsSearch(searchQuery, [getExperimentalSearchEntry().ptyFloatPill])
   const agentHibernationEnabled = settings.experimentalAgentHibernation === true
   // Use the planner’s clamped millisecond value/default while editing minutes.
   const agentHibernationIdleMinutes = Math.round(

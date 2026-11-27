@@ -7,6 +7,7 @@ import { defineFixture } from '../../component-fixtures/component-fixture'
 import type { AgentStatusEntry } from '../../../../shared/agent-status/contracts/agent-status-types'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/workspace/identity/floating-workspace-id'
 import { PtyFloatPill } from './PtyFloatPill'
+import { createPtyFloatPillGroupsSelector } from './pty-float-pill-groups'
 
 const checkout = makeWorktree({ id: 'pill-repo::/preview/orca', repoId: 'pill-repo' })
 checkout.displayName = 'orca'
@@ -76,15 +77,15 @@ function pill(expanded: boolean) {
     store: store(),
     setup: () => {
       useAppStore.setState({ agentStatusByPaneKey: agentStatuses() })
-      window.localStorage.setItem(
-        'orca-pty-float-pill-placement',
-        JSON.stringify({ position: { x: 8, y: 36 }, expanded })
-      )
     },
-    // A transform makes the wrapper contain the fixed-position pill, so the frame measures it.
     render: () => (
-      <div style={{ height: expanded ? 330 : 80, transform: 'translateZ(0)' }}>
-        <PtyFloatPill />
+      <div className="w-max p-2">
+        <PtyFloatPill
+          groups={createPtyFloatPillGroupsSelector()(useAppStore.getState())}
+          expanded={expanded}
+          onToggle={() => {}}
+          onReveal={() => {}}
+        />
       </div>
     )
   })

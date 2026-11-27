@@ -1,4 +1,4 @@
 export type PtyFloatPillSettings = {
-  /** Experimental: draggable floating pill listing every terminal tab's live status; off mounts nothing. */
+  /** Experimental: always-on-top desktop window listing every terminal tab's live status. */
   experimentalPtyFloatPill?: boolean
 }

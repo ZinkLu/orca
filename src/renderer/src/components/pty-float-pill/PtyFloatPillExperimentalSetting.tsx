@@ -23,7 +23,7 @@ export function PtyFloatPillExperimentalSetting({
       title={title}
       description={t(
         'auto.components.settings.ExperimentalPane.ptyFloatPill.description',
-        'Floating pill that lists every terminal and what it is doing.'
+        'Desktop pill that stays above other apps and shows terminal status.'
       )}
       keywords={getExperimentalSearchEntry().ptyFloatPill.keywords}
       className="space-y-3 py-3"
@@ -35,7 +35,7 @@ export function PtyFloatPillExperimentalSetting({
           <p className="text-xs text-muted-foreground">
             {t(
               'auto.components.settings.ExperimentalPane.ptyFloatPill.copy',
-              'Shows a pill over the app that lists every terminal tab by workspace with its live status. Click a terminal to open it, click the header to collapse the list, and drag the header to move the pill.'
+              'Shows terminal status in a separate window that stays visible when Orca is minimized. Click a terminal to return to it in Orca, use the arrow to collapse the list, and drag the status bar to move the pill.'
             )}
           </p>
         </div>

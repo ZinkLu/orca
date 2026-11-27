@@ -25,6 +25,7 @@ import type { CliApi } from './api/cli-install/cli-install-api'
 import type { OrcaUninstallApi } from './api/orca-uninstall/orca-uninstall-api'
 import type { CrashReportsApi, FeedbackApi } from './api/diagnostics/crash-report-api'
 import type { DashboardApi, TerminalPreviewApi } from './api/window-ui/dashboard-api'
+import type { PtyFloatPillApi } from '../shared/terminal/pty-float-pill-snapshot'
 import type { DocPreviewApi } from './api/document-preview/doc-preview-api'
 import type { EmulatorApi } from './api/emulator/emulator-api'
 import type { EphemeralVmApi } from './api/cloud-workspaces/ephemeral-vm-api'
@@ -141,6 +142,7 @@ export type PreloadApi = {
   notifications: NotificationsApi
   onboarding: OnboardingApi
   dashboard: DashboardApi
+  ptyFloatPill: PtyFloatPillApi
   terminalPreview: TerminalPreviewApi
   macosTccPrompts: MacosTccPromptsApi
   developerPermissions: DeveloperPermissionsApi

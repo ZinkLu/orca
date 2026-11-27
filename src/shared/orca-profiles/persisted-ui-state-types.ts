@@ -253,6 +253,7 @@ export type PersistedUIState = {
   windowFullScreen?: boolean
   /** Dashboard popout bounds, independent of main-window bounds. */
   dashboardPopoutBounds?: { x: number; y: number; width: number; height: number } | null
+  ptyFloatPillPosition?: { x: number; y: number } | null
   /** Migrate legacy recent→smart once so later activity-based recent selections survive. */
   _sortBySmartMigrated?: boolean
   /** Rollback field only: every load stamps it, so it cannot gate migration; use _inlineAgentsDefaultedForAllUsers. */

@@ -4,22 +4,20 @@ import './diagnostics/react-commits/react-commit-cascade-observer'
 import './assets/main.css'
 
 import { StrictMode, useEffect } from 'react'
+import {
+  CompanionWindowSettingsSync,
+  initializeCompanionWindowAppearance
+} from './app-shell/appearance/CompanionWindowSettingsSync'
 import { DashboardPopoutRoot } from './components/dashboard-popout/DashboardPopoutRoot'
 import { RecoverableRenderErrorBoundary } from './components/error-boundaries/RecoverableRenderErrorBoundary'
 import { installRendererCrashDiagnostics } from './diagnostics/crash-reporting/crash-diagnostics'
 import { recordRendererCrashBreadcrumb } from './diagnostics/crash-reporting/crash-breadcrumb-recorder'
-import { applyStartupAppTheme, useAppThemePaint } from './app-shell/appearance/use-app-theme-paint'
-import { buildAppFontFamily } from './app-shell/appearance/app-font-family'
-import { applyCodeFontSmoothing } from './lib/editor/appearance/code-font-smoothing'
 import { I18nProvider } from './i18n/I18nProvider'
 import { useTranslate } from './i18n/use-translate'
-import { useAppStore } from './store/index'
-import type { GlobalSettings } from '../../shared/settings/global-settings-types'
 import { getOrCreateRendererRoot } from './app-shell/startup/react-renderer-root'
 import { setReactCommitCascadeRendererSurface } from './diagnostics/react-commits/react-commit-cascade-telemetry'
 import { installOsFileDropCancellationGuard } from './lib/files/drop/os-file-drop-cancellation-guard'
 import { installBodyOverlayAttributes } from './lib/overlay-interaction/body-overlay-attributes'
-import { useReduceVisualEffects } from './hooks/theme/use-reduce-visual-effects'
 
 const disposeOsFileDropGuard = installOsFileDropCancellationGuard()
 import.meta.hot?.dispose(disposeOsFileDropGuard)
@@ -30,72 +28,12 @@ recordRendererCrashBreadcrumb('popout_bootstrap_started', { dev: import.meta.env
 installRendererCrashDiagnostics('dashboard-popout')
 setReactCommitCascadeRendererSurface('dashboard-popout')
 
-function applyPopoutFonts(settings: GlobalSettings | null): void {
-  document.documentElement.style.setProperty(
-    '--app-font-family',
-    buildAppFontFamily(settings?.appFontFamily)
-  )
-  applyCodeFontSmoothing(settings?.codeFontSmoothing)
-}
-
-// Seed this separate store synchronously to prevent OS-theme flash before async appearance hydration.
-let startupSettings: GlobalSettings | null = null
-try {
-  startupSettings = window.api.settings.getSync()
-} catch {
-  // Async hydration below remains available if the startup read fails.
-}
-if (startupSettings) {
-  useAppStore.setState({ settings: startupSettings })
-}
-applyStartupAppTheme(startupSettings)
-applyPopoutFonts(startupSettings)
+initializeCompanionWindowAppearance()
 
 const rootElement = document.getElementById('root')
 if (!rootElement) {
   recordRendererCrashBreadcrumb('popout_root_missing')
   throw new Error('Pop-out root element not found.')
-}
-
-function PopoutSettingsSync(): null {
-  const settings = useAppStore((state) => state.settings)
-  useReduceVisualEffects(settings?.reduceVisualEffects)
-  useAppThemePaint()
-
-  useEffect(() => {
-    let disposed = false
-    // Shortcut overrides live in a separate keybinding file; main broadcasts edits to every window.
-    const offKeybindingsChanged = window.api.keybindings?.onChanged((snapshot) =>
-      useAppStore.getState().setKeybindingSnapshot(snapshot)
-    )
-    void useAppStore.getState().fetchKeybindings()
-    const setSettings = (next: GlobalSettings): void => {
-      if (!disposed) {
-        useAppStore.setState({ settings: next })
-      }
-    }
-    const offChanged = window.api.settings.onChanged((updates) => {
-      const current = useAppStore.getState().settings
-      if (current) {
-        setSettings({ ...current, ...updates })
-      }
-    })
-    void window.api.settings
-      .get()
-      .then(setSettings)
-      .catch(() => undefined)
-    return () => {
-      disposed = true
-      offChanged()
-      offKeybindingsChanged?.()
-    }
-  }, [])
-
-  useEffect(() => {
-    applyPopoutFonts(settings)
-  }, [settings])
-
-  return null
 }
 
 function PopoutRoot(): React.JSX.Element {
@@ -121,7 +59,7 @@ function PopoutRoot(): React.JSX.Element {
 getOrCreateRendererRoot(rootElement, import.meta.hot?.data).render(
   <StrictMode>
     <I18nProvider>
-      <PopoutSettingsSync />
+      <CompanionWindowSettingsSync />
       <PopoutRoot />
     </I18nProvider>
   </StrictMode>

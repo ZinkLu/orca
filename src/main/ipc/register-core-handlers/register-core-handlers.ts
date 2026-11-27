@@ -32,6 +32,7 @@ import { registerOnboardingHandlers } from '../onboarding'
 import { registerDashboardPopoutHandlers } from '../dashboard/dashboard-popout'
 import { registerWorkspaceSpaceWindowHandlers } from '../workspace-space/workspace-space-window'
 import { registerTerminalPreviewHandlers } from '../terminal-views/terminal-preview'
+import { registerPtyFloatPillHandlers } from '../terminal-views/pty-float-pill'
 import { setAgentBrowserBridgeRef, registerBrowserHandlers } from '../browser/browser'
 import { registerBrowserServerDownloadCopyHandlers } from '../browser/browser-server-download-copy-ipc'
 import { setTrustedBrowserRendererWebContentsId } from '../browser/browser-renderer-trust'
@@ -156,6 +157,7 @@ export async function registerCoreHandlers(
     registerDashboardPopoutHandlers(store, keybindings)
     registerWorkspaceSpaceWindowHandlers(store)
     registerTerminalPreviewHandlers(runtime)
+    registerPtyFloatPillHandlers(store)
     registerTerminalRenderDesyncEvidenceHandler()
     registerSettingsHandlers(store, agentAwakeService)
     registerLazySkillsHandlers(store, runtime)

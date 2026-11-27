@@ -5,19 +5,7 @@ import type { TerminalTabActivityStatus } from '@/components/tab-bar/terminal-ta
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/workspace/identity/floating-workspace-id'
 import { resolveTerminalTabTitle } from '../../../../shared/workspace-layout/tab-groups/tab-title-resolution'
 import { compareDisplayName } from '../../../../shared/worktree/display-name-order'
-
-export type PtyFloatPillEntry = {
-  tabId: string
-  title: string
-  status: TerminalTabActivityStatus
-}
-
-export type PtyFloatPillGroup = {
-  worktreeId: string
-  /** Null for the floating workspace, which has no catalog name. */
-  name: string | null
-  entries: PtyFloatPillEntry[]
-}
+import type { PtyFloatPillGroup } from '../../../../shared/terminal/pty-float-pill-snapshot'
 
 type TabStatusSelector = ReturnType<typeof createTerminalTabActivityStatusSelector>
 
