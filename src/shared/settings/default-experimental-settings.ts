@@ -13,5 +13,6 @@ export const DEFAULT_EXPERIMENTAL_SETTINGS = {
   experimentalAppRail: true,
   experimentalEphemeralVms: false,
   experimentalWslHosts: false,
-  experimentalOrchestrationPanel: false
+  experimentalOrchestrationPanel: false,
+  experimentalPtyFloatPill: false
 } satisfies Partial<GlobalSettings>

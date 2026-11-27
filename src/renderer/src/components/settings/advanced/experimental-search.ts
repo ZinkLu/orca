@@ -5,6 +5,7 @@ import { translate } from '@/i18n/i18n'
 import { translateSearchKeyword } from '../search/settings-search-keywords'
 import { getNewWorktreeCardStyleSearchEntry } from './new-worktree-card-style-search-entry'
 import { getAppRailSearchEntry } from '../../app-rail/app-rail-search-entry'
+import { getPtyFloatPillSearchEntry } from '../../pty-float-pill/pty-float-pill-search-entry'
 import { getEphemeralVmsSearchEntry } from '../virtual-machines/recipes/ephemeral-vms-search'
 import { getWslHostsExperimentalSearchEntry } from '../wsl/hosts/wsl-hosts-experimental-search'
 import { isWebClientLocation } from '@/app-shell/platform/web-client-location'
@@ -217,6 +218,7 @@ export const getExperimentalSearchEntry = createLocalizedCatalog(
       },
       newWorktreeCardStyle: getNewWorktreeCardStyleSearchEntry(),
       appRail: getAppRailSearchEntry(),
+      ptyFloatPill: getPtyFloatPillSearchEntry(),
       ephemeralVms: getEphemeralVmsSearchEntry()
     }) satisfies Record<string, SettingsSearchEntry>
 )

@@ -16,6 +16,7 @@ import { useTranslate } from '@/i18n/use-translate'
 import { AgentDashboardExperimentalSetting } from '../../dashboard/settings/AgentDashboardExperimentalSetting'
 import { EphemeralVmsExperimentalSetting } from '../virtual-machines/recipes/EphemeralVmsExperimentalSetting'
 import { AppRailExperimentalSetting } from '../../app-rail/AppRailExperimentalSetting'
+import { PtyFloatPillExperimentalSetting } from '../../pty-float-pill/PtyFloatPillExperimentalSetting'
 import { WslHostsExperimentalSetting } from '../wsl/hosts/WslHostsExperimentalSetting'
 import { wslHostsAvailable } from '../../../runtime/hosts/wsl/use-wsl-hosts-enabled'
 import {
@@ -62,6 +63,9 @@ export function ExperimentalPane({
     getExperimentalSearchEntry().newWorktreeCardStyle
   ])
   const showAppRail = matchesSettingsSearch(searchQuery, [getExperimentalSearchEntry().appRail])
+  const showPtyFloatPill = matchesSettingsSearch(searchQuery, [
+    getExperimentalSearchEntry().ptyFloatPill
+  ])
   const agentHibernationEnabled = settings.experimentalAgentHibernation === true
   // Use the planner’s clamped millisecond value/default while editing minutes.
   const agentHibernationIdleMinutes = Math.round(
@@ -342,6 +346,10 @@ export function ExperimentalPane({
 
         {showAppRail ? (
           <AppRailExperimentalSetting settings={settings} updateSettings={updateSettings} />
+        ) : null}
+
+        {showPtyFloatPill ? (
+          <PtyFloatPillExperimentalSetting settings={settings} updateSettings={updateSettings} />
         ) : null}
 
         <EphemeralVmsExperimentalSetting settings={settings} updateSettings={updateSettings} />

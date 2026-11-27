@@ -9575,6 +9575,12 @@
             "description": "Codex chats with the same setup share one background process instead of starting one per chat.",
             "copy": "Uses less memory and starts new chats faster. If a shared process crashes, all of its chats reconnect. Applies to chats on this computer started after you change it; remote and WSL hosts keep one process per chat.",
             "toggleLabel": "Toggle shared Codex servers"
+          },
+          "ptyFloatPill": {
+            "title": "Terminal status pill",
+            "description": "Floating pill that lists every terminal and what it is doing.",
+            "copy": "Shows a pill over the app that lists every terminal tab by workspace with its live status. Click a terminal to open it, click the header to collapse the list, and drag the header to move the pill.",
+            "toggleLabel": "Toggle terminal status pill"
           }
         },
         "FloatingWorkspacePane": {
@@ -11792,6 +11798,14 @@
               "description": "Codex chats with the same setup share one background process instead of starting one per chat.",
               "codex": "codex",
               "memory": "memory"
+            },
+            "ptyFloatPill": {
+              "title": "Terminal status pill",
+              "description": "Floating pill that lists every terminal and what it is doing.",
+              "status": "status",
+              "floating": "floating",
+              "pill": "pill",
+              "pty": "pty"
             }
           }
         },
@@ -20983,6 +20997,10 @@
         "noWslDistros": "No WSL distros found",
         "wslDistro": "WSL distro",
         "wslDistroHint": "A Linux distro on this PC"
+      },
+      "ptyFloatPill": {
+        "toggle": "Terminal status",
+        "floatingWorkspace": "Floating workspace"
       }
     },
     "i18n": {

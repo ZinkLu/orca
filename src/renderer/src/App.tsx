@@ -1,4 +1,5 @@
 import { PluginUpdateReviewHost } from './components/plugins/dialogs/PluginUpdateReviewHost'
+import { PtyFloatPillHost } from './components/pty-float-pill/PtyFloatPillHost'
 import { useCallback, useEffect, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Toaster } from '@/components/ui/sonner'
@@ -128,6 +129,7 @@ function App(): React.JSX.Element {
         <PlainSshTerminalPanels />
         <PluginShotReplayMount />
         <PluginUpdateReviewHost />
+        <PtyFloatPillHost />
       </TooltipProvider>
       <SkillFreshnessNudge />
       {/* One account-link confirm at a time, over whatever screen the owner is on. */}

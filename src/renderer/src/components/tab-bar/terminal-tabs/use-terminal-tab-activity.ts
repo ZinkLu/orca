@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAppStore } from '../../../store/index'
+import type { AppState } from '@/store/types'
 import type { TerminalTab } from '../../../../../shared/workspace-layout/terminal-tab-types'
 import {
   getTerminalTabActivityFlags,
@@ -65,13 +66,13 @@ function createActivityStatusSelector(): (input: ActivityStatusInput) => Termina
   }
 }
 
-/** A terminal tab's status glyph and progress, as primitives so unrelated agent updates can't repaint it. */
-export function useTerminalTabActivity(
-  tab: Pick<TerminalTab, 'id' | 'title' | 'launchAgent'>
-): TerminalTabActivity {
-  // Every store write reruns this per mounted tab; skip title heuristics when this tab's inputs held.
-  const [selectActivityStatus] = useState(createActivityStatusSelector)
-  const activityStatus = useAppStore((s) =>
+/** One tab's status read from the store, shared by the tab strip and the terminal status pill. */
+export function createTerminalTabActivityStatusSelector(): (
+  s: AppState,
+  tab: ActivityStatusInput['tab']
+) => TerminalTabActivityStatus {
+  const selectActivityStatus = createActivityStatusSelector()
+  return (s, tab) =>
     selectActivityStatus({
       tab,
       agentStatusByPaneKey: s.agentStatusByPaneKey,
@@ -81,7 +82,15 @@ export function useTerminalTabActivity(
       terminalLayout: s.terminalLayoutsByTabId?.[tab.id],
       paneForegroundAgentByPaneKey: s.paneForegroundAgentByPaneKey
     })
-  )
+}
+
+/** A terminal tab's status glyph and progress, as primitives so unrelated agent updates can't repaint it. */
+export function useTerminalTabActivity(
+  tab: Pick<TerminalTab, 'id' | 'title' | 'launchAgent'>
+): TerminalTabActivity {
+  // Every store write reruns this per mounted tab; skip title heuristics when this tab's inputs held.
+  const [selectActivityStatus] = useState(createTerminalTabActivityStatusSelector)
+  const activityStatus = useAppStore((s) => selectActivityStatus(s, tab))
   const programProgress = useAppStore((s) =>
     resolveTerminalTabProgramProgress({
       tabId: tab.id,
