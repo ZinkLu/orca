@@ -24,7 +24,8 @@ export function PtyFloatPill(): React.JSX.Element | null {
   const t = useTranslate()
   const [selectGroups] = useState(createPtyFloatPillGroupsSelector)
   const groups = useAppStore(selectGroups)
-  const placement = usePtyFloatPillPlacement()
+  // Destructured: React Compiler bails on render reads of an object whose member goes to `ref`.
+  const { ref, position, expanded, headerProps } = usePtyFloatPillPlacement()
   if (groups.length === 0) {
     return null
   }
@@ -32,26 +33,26 @@ export function PtyFloatPill(): React.JSX.Element | null {
 
   return (
     <div
-      ref={placement.ref}
+      ref={ref}
       data-pty-float-pill=""
       className={cn(
         'fixed z-40 overflow-hidden border border-border bg-popover/95 text-popover-foreground shadow-floating backdrop-blur',
-        placement.expanded ? 'w-72 rounded-lg' : 'w-max rounded-full'
+        expanded ? 'w-72 rounded-lg' : 'w-max rounded-full'
       )}
-      style={{ left: placement.position.x, top: placement.position.y }}
+      style={{ left: position.x, top: position.y }}
     >
       <Button
         type="button"
         variant="ghost-inset"
         size="pill"
-        aria-expanded={placement.expanded}
+        aria-expanded={expanded}
         aria-label={t('auto.components.ptyFloatPill.toggle', 'Terminal status')}
         className="w-full cursor-grab touch-none justify-start select-none active:cursor-grabbing"
         {...keepPaneFocusPressProps}
-        {...placement.headerProps}
+        {...headerProps}
       >
         <span className="flex items-center gap-2.5 font-normal">
-          {placement.expanded ? <ChevronDown aria-hidden /> : <ChevronRight aria-hidden />}
+          {expanded ? <ChevronDown aria-hidden /> : <ChevronRight aria-hidden />}
           <span className="flex items-center gap-1">
             <SquareTerminal className="text-muted-foreground" aria-hidden />
             <span className="tabular-nums">{total}</span>
@@ -64,7 +65,7 @@ export function PtyFloatPill(): React.JSX.Element | null {
           ))}
         </span>
       </Button>
-      {placement.expanded ? (
+      {expanded ? (
         <div className="scrollbar-sleek max-h-[min(20rem,60vh)] overflow-y-auto border-t border-border py-1">
           {groups.map((group) => {
             const name =
