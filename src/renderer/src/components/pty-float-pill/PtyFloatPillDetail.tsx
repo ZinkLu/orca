@@ -45,8 +45,8 @@ export function PtyFloatPillDetail({
       )
     : conversation?.disabledReason
       ? agentSendDisabledReasonLabel(conversation.disabledReason, t)
-      : !conversation?.ptyId
-        ? t('auto.components.ptyFloatPill.noAgent', 'Open the terminal to continue this session.')
+      : !conversation || (conversation.kind === 'terminal' && !conversation.ptyId)
+        ? t('auto.components.ptyFloatPill.noAgent', 'Open the session to continue.')
         : null
 
   const send = async (): Promise<void> => {
@@ -77,7 +77,7 @@ export function PtyFloatPillDetail({
         (result?.status === 'unconfirmed'
           ? t(
               'auto.components.ptyFloatPill.unconfirmed',
-              'Delivery could not be confirmed. Check the terminal before sending again.'
+              'Delivery could not be confirmed. Check the session before sending again.'
             )
           : result?.status === 'failed'
             ? t(
@@ -97,7 +97,7 @@ export function PtyFloatPillDetail({
           variant="ghost-inset"
           size="icon-xs"
           onClick={onBack}
-          aria-label={t('auto.components.ptyFloatPill.back', 'Back to terminals')}
+          aria-label={t('auto.components.ptyFloatPill.back', 'Back to sessions')}
         >
           <ArrowLeft aria-hidden />
         </Button>
@@ -107,7 +107,7 @@ export function PtyFloatPillDetail({
         </div>
         <Button variant="ghost-inset" size="xs" onClick={onReveal}>
           <ExternalLink aria-hidden />
-          {t('auto.components.ptyFloatPill.openTerminal', 'Open terminal')}
+          {t('auto.components.ptyFloatPill.openTerminal', 'Open session')}
         </Button>
       </div>
       <div className="flex items-center gap-1.5 px-3 pb-2 text-xs text-muted-foreground">

@@ -51,10 +51,6 @@ export function registerPtyFloatPillHandlers(store: Store): void {
       return
     }
     groups = result.data
-    if (groups.length === 0) {
-      closePtyFloatPillWindow()
-      return
-    }
     createPtyFloatPillWindow(nativeSettings, event.sender).webContents.send(
       'ptyFloatPill:snapshot',
       groups
@@ -99,10 +95,17 @@ export function registerPtyFloatPillHandlers(store: Store): void {
     async (event, value: unknown): Promise<PtyFloatPillSendResult> => {
       const owner = getTrustedUIRendererWindow()
       const message = isPill(event) ? admittedPtyFloatPillMessage(groups, value) : null
-      if (!owner || !message || sending.has(message.ptyId)) {
+      const targetKey =
+        message &&
+        JSON.stringify([
+          message.kind,
+          message.kind === 'structured-session' ? message.executionHostId : null,
+          message.ptyId ?? message.sessionId
+        ])
+      if (!owner || !message || !targetKey || sending.has(targetKey)) {
         return { status: 'failed' }
       }
-      sending.add(message.ptyId)
+      sending.add(targetKey)
       try {
         return await requestRendererReply<PtyFloatPillMessageReply>(owner, {
           requestChannel: 'ptyFloatPill:sendMessageRequested',
@@ -114,7 +117,7 @@ export function registerPtyFloatPillHandlers(store: Store): void {
       } catch {
         return { status: 'unconfirmed' }
       } finally {
-        sending.delete(message.ptyId)
+        sending.delete(targetKey)
       }
     }
   )

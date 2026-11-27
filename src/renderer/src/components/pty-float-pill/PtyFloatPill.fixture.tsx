@@ -10,6 +10,8 @@ import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/workspace/iden
 import { PtyFloatPill } from './PtyFloatPill'
 import { PtyFloatPillDetail } from './PtyFloatPillDetail'
 import { createPtyFloatPillGroupsSelector } from './pty-float-pill-groups'
+import type { Tab } from '../../../../shared/workspace-layout/tab-groups/tab-types'
+import { structuredAgentSessionPaneKey } from '../../../../shared/agent-session/view/structured-agent-session-projection'
 
 const checkout = makeWorktree({ id: 'pill-repo::/preview/orca', repoId: 'pill-repo' })
 checkout.displayName = 'orca'
@@ -112,6 +114,71 @@ function pill(expanded: boolean) {
 
 export const expanded = pill(true)
 export const collapsed = pill(false)
+
+export const empty = defineFixture({
+  width: 400,
+  render: () => (
+    <div className="w-max p-2">
+      <PtyFloatPill groups={[]} expanded onToggle={() => {}} onSelect={() => {}} />
+    </div>
+  )
+})
+
+const chat: Tab = {
+  id: 'structured-agent-session-pill-chat',
+  entityId: 'pill-chat',
+  groupId: 'pill-chats',
+  worktreeId: `folder:${folder.id}`,
+  executionHostId: 'local',
+  contentType: 'agent-session',
+  agentSessionAgent: 'pi',
+  label: 'Pi',
+  customLabel: null,
+  color: null,
+  sortOrder: 0,
+  createdAt: 1
+}
+
+export const nativeChatOnly = defineFixture({
+  width: 400,
+  store: {
+    folderWorkspaces: [folder],
+    tabsByWorktree: {},
+    unifiedTabsByWorktree: { [chat.worktreeId]: [chat] }
+  },
+  setup: () => {
+    const paneKey = structuredAgentSessionPaneKey(chat.id, chat.entityId)
+    useAppStore.setState({
+      agentStatusByPaneKey: acceptedAgentStatuses([
+        [
+          paneKey,
+          {
+            paneKey,
+            worktreeId: chat.worktreeId,
+            agentType: 'pi',
+            state: 'done',
+            prompt: '',
+            updatedAt: Date.now(),
+            stateStartedAt: Date.now(),
+            stateHistory: [],
+            lastAssistantMessage: '已完成检查，可以继续。',
+            structuredHostOwned: true
+          }
+        ]
+      ])
+    })
+  },
+  render: () => (
+    <div className="w-max p-2">
+      <PtyFloatPill
+        groups={createPtyFloatPillGroupsSelector()(useAppStore.getState())}
+        expanded
+        onToggle={() => {}}
+        onSelect={() => {}}
+      />
+    </div>
+  )
+})
 
 function DetailFixture(): React.JSX.Element {
   const [draft, setDraft] = useState('继续验证远程终端，完成后告诉我结果。')

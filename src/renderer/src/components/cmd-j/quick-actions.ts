@@ -188,7 +188,7 @@ export const getCmdJQuickActions = createLocalizedCatalog((): CmdJQuickAction[] 
     ),
     description: translate(
       'auto.components.ptyFloatPill.resetPositionDescription',
-      'Move the terminal status pill to the top of the screen containing the pointer.'
+      'Move the session status pill to the top of the screen containing the pointer.'
     ),
     icon: RotateCcw,
     verbKeywords: [

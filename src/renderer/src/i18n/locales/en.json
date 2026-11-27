@@ -9577,10 +9577,10 @@
             "toggleLabel": "Toggle shared Codex servers"
           },
           "ptyFloatPill": {
-            "title": "Terminal status pill",
-            "description": "Desktop pill with terminal status, latest messages, and replies.",
-            "copy": "Shows terminal status and latest messages above other apps, even when Orca is minimized. Click a row to read and reply, or open its terminal in Orca. Drag the status bar to move the pill.",
-            "toggleLabel": "Toggle terminal status pill"
+            "title": "Session status pill",
+            "description": "Desktop pill with terminal and chat status, latest messages, and replies.",
+            "copy": "Shows terminal and chat status above other apps, even when Orca is minimized. Click a row to read the latest message, reply, or open the session. Drag the status bar to move the pill.",
+            "toggleLabel": "Toggle session status pill"
           }
         },
         "FloatingWorkspacePane": {
@@ -11800,8 +11800,8 @@
               "memory": "memory"
             },
             "ptyFloatPill": {
-              "title": "Terminal status pill",
-              "description": "Desktop pill with terminal status, latest messages, and replies.",
+              "title": "Session status pill",
+              "description": "Desktop pill with terminal and chat status, latest messages, and replies.",
               "status": "status",
               "floating": "floating",
               "pill": "pill",
@@ -20999,21 +20999,22 @@
         "wslDistroHint": "A Linux distro on this PC"
       },
       "ptyFloatPill": {
-        "toggle": "Terminal status",
+        "toggle": "Session status",
         "resetPosition": "Reset floating window position",
-        "resetPositionDescription": "Move the terminal status pill to the top of the screen containing the pointer.",
+        "resetPositionDescription": "Move the session status pill to the top of the screen containing the pointer.",
         "floatingWorkspace": "Floating workspace",
         "sessionChanged": "This session changed. Reopen it from the list.",
-        "noAgent": "Open the terminal to continue this session.",
+        "noAgent": "Open the session to continue.",
         "sent": "Message sent",
-        "unconfirmed": "Delivery could not be confirmed. Check the terminal before sending again.",
+        "unconfirmed": "Delivery could not be confirmed. Check the session before sending again.",
         "sendFailed": "Message not sent. Check the session and try again.",
-        "back": "Back to terminals",
-        "openTerminal": "Open terminal",
+        "back": "Back to sessions",
+        "openTerminal": "Open session",
         "noMessage": "No assistant message received yet.",
         "reply": "Reply to agent",
         "sending": "Sending…",
-        "send": "Send"
+        "send": "Send",
+        "empty": "No open sessions"
       }
     },
     "i18n": {

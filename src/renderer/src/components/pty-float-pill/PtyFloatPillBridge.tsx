@@ -4,6 +4,10 @@ import { revealTerminalPane } from '@/lib/workspace/activation/reveal-terminal-p
 import { createPtyFloatPillGroupsSelector } from './pty-float-pill-groups'
 import type { PtyFloatPillGroup } from '../../../../shared/terminal/pty-float-pill-snapshot'
 import { sendPtyFloatPillMessage } from './pty-float-pill-send-message'
+import { isStructuredTab } from '../../../../shared/agent-session/view/structured-agent-session-tab'
+import { ptyFloatPillStructuredConversation } from './pty-float-pill-conversation'
+import { activateAndRevealWorkspace } from '@/lib/workspace/activation/worktree-activation'
+import { requestNativeChatComposerFocus } from '@/components/native-chat/composer/focus/native-chat-composer-focus-intent'
 
 function subscribePtyFloatPillBridge(): () => void {
   const api = window.api.ptyFloatPill
@@ -35,6 +39,21 @@ function subscribePtyFloatPillBridge(): () => void {
   })
   const offReveal = api.onRevealTerminal(({ worktreeId, tabId, leafId }) => {
     const state = useAppStore.getState()
+    const chat = state.unifiedTabsByWorktree[worktreeId]?.find(
+      (tab) => tab.id === tabId && isStructuredTab(tab)
+    )
+    if (chat) {
+      if (leafId && ptyFloatPillStructuredConversation(state, chat)?.leafId !== leafId) {
+        return
+      }
+      if (
+        activateAndRevealWorkspace(worktreeId, { executionHostId: chat.executionHostId }) !== false
+      ) {
+        state.activateTab(tabId, { worktreeId })
+        requestNativeChatComposerFocus(tabId)
+      }
+      return
+    }
     if (!state.tabsByWorktree[worktreeId]?.some((tab) => tab.id === tabId)) {
       return
     }

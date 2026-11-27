@@ -101,9 +101,13 @@ export function PtyFloatPillWindow(): React.JSX.Element {
                 })
               }
               onSend={(prompt) =>
-                entry.conversation?.ptyId && available
+                entry.conversation &&
+                (entry.conversation.kind === 'structured-session' || entry.conversation.ptyId) &&
+                available
                   ? window.api.ptyFloatPill.sendMessage({
                       ...selected.target,
+                      kind: entry.conversation.kind,
+                      executionHostId: entry.conversation.executionHostId,
                       leafId: entry.conversation.leafId,
                       ptyId: entry.conversation.ptyId,
                       sessionId: entry.conversation.sessionId,

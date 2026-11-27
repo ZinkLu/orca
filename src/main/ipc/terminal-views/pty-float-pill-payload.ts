@@ -24,15 +24,28 @@ export const PtyFloatPillTargetSchema = lazyZodSchema(() =>
   z.object({ worktreeId: id, tabId: id, leafId: z.uuid().optional() })
 )
 export const PtyFloatPillMessageSchema = lazyZodSchema(() =>
-  PtyFloatPillTargetSchema.extend({
-    leafId: z.uuid(),
-    ptyId: id,
-    sessionId: id.nullable(),
-    prompt: z.string().trim().min(1).max(PTY_FLOAT_PILL_MESSAGE_MAX_LENGTH)
-  })
+  z.discriminatedUnion('kind', [
+    PtyFloatPillTargetSchema.extend({
+      kind: z.literal('terminal'),
+      leafId: z.uuid(),
+      ptyId: id,
+      sessionId: id.nullable(),
+      prompt: z.string().trim().min(1).max(PTY_FLOAT_PILL_MESSAGE_MAX_LENGTH)
+    }),
+    PtyFloatPillTargetSchema.extend({
+      kind: z.literal('structured-session'),
+      executionHostId: id,
+      leafId: z.uuid(),
+      ptyId: z.null(),
+      sessionId: id,
+      prompt: z.string().trim().min(1).max(PTY_FLOAT_PILL_MESSAGE_MAX_LENGTH)
+    })
+  ])
 )
 const conversation = lazyZodSchema(() =>
   z.object({
+    kind: z.enum(['terminal', 'structured-session']),
+    executionHostId: id.nullable().optional(),
     leafId: z.uuid(),
     ptyId: id.nullable(),
     sessionId: id.nullable(),

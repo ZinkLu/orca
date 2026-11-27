@@ -7,7 +7,14 @@ import { resolveTerminalTabTitle } from '../../../../shared/workspace-layout/tab
 import { compareDisplayName } from '../../../../shared/worktree/display-name-order'
 import type { PtyFloatPillGroup } from '../../../../shared/terminal/pty-float-pill-snapshot'
 import { matchesPtyFloatPillMessageTarget } from '../../../../shared/terminal/pty-float-pill-message-target'
-import { createPtyFloatPillConversationSelector } from './pty-float-pill-conversation'
+import {
+  createPtyFloatPillConversationSelector,
+  ptyFloatPillStructuredConversation
+} from './pty-float-pill-conversation'
+import { getStructuredAgentSessionTabs } from '@/components/native-chat/session/status/structured-agent-session-tabs'
+import { structuredAgentSessionAddressTabId } from '../../../../shared/agent-session/view/structured-agent-session-projection'
+import { readStructuredChatTabName } from '@/runtime/native-chat/naming/structured-chat-tab-name'
+import { isTuiAgent } from '../../../../shared/agent-launch/catalog/tui-agent-config'
 
 type TabStatusSelector = ReturnType<typeof createTerminalTabActivityStatusSelector>
 
@@ -50,7 +57,7 @@ function sameGroups(a: readonly PtyFloatPillGroup[], b: readonly PtyFloatPillGro
   )
 }
 
-/** Every terminal tab with the tab strip's status, grouped by workspace; the result keeps its identity until a shown field changes. */
+/** Open terminal and chat tabs share the tab strip's status, grouped by workspace. */
 export function createPtyFloatPillGroupsSelector(): (
   state: AppState
 ) => readonly PtyFloatPillGroup[] {
@@ -85,6 +92,39 @@ export function createPtyFloatPillGroupsSelector(): (
           }
         })
       groups.push({ worktreeId, name, entries })
+    }
+    const byWorkspace = new Map(groups.map((group) => [group.worktreeId, group]))
+    for (const tab of getStructuredAgentSessionTabs(state.unifiedTabsByWorktree)) {
+      const name =
+        tab.worktreeId === FLOATING_TERMINAL_WORKTREE_ID
+          ? null
+          : selectOrchestrationWorkerWorkspaceLabel(state, tab.worktreeId)
+      if (name === null && tab.worktreeId !== FLOATING_TERMINAL_WORKTREE_ID) {
+        continue
+      }
+      seenTabIds.add(tab.id)
+      let selectStatus = statusSelectors.get(tab.id)
+      if (!selectStatus) {
+        selectStatus = createTerminalTabActivityStatusSelector()
+        statusSelectors.set(tab.id, selectStatus)
+      }
+      let group = byWorkspace.get(tab.worktreeId)
+      if (!group) {
+        group = { worktreeId: tab.worktreeId, name, entries: [] }
+        groups.push(group)
+        byWorkspace.set(tab.worktreeId, group)
+      }
+      const title = readStructuredChatTabName(tab, state)
+      group.entries.push({
+        tabId: tab.id,
+        title,
+        status: selectStatus(state, {
+          id: structuredAgentSessionAddressTabId(tab.id, tab.entityId),
+          title,
+          launchAgent: isTuiAgent(tab.agentSessionAgent) ? tab.agentSessionAgent : undefined
+        }),
+        conversation: ptyFloatPillStructuredConversation(state, tab)
+      })
     }
     for (const tabId of statusSelectors.keys()) {
       if (!seenTabIds.has(tabId)) {

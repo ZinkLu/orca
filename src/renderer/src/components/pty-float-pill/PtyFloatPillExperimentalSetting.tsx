@@ -19,14 +19,14 @@ export function PtyFloatPillExperimentalSetting({
   const enabled = settings.experimentalPtyFloatPill === true
   const title = t(
     'auto.components.settings.ExperimentalPane.ptyFloatPill.title',
-    'Terminal status pill'
+    'Session status pill'
   )
   return (
     <SearchableSetting
       title={title}
       description={t(
         'auto.components.settings.ExperimentalPane.ptyFloatPill.description',
-        'Desktop pill with terminal status, latest messages, and replies.'
+        'Desktop pill with terminal and chat status, latest messages, and replies.'
       )}
       keywords={getExperimentalSearchEntry().ptyFloatPill.keywords}
       className="space-y-3 py-3"
@@ -38,7 +38,7 @@ export function PtyFloatPillExperimentalSetting({
           <p className="text-xs text-muted-foreground">
             {t(
               'auto.components.settings.ExperimentalPane.ptyFloatPill.copy',
-              'Shows terminal status and latest messages above other apps, even when Orca is minimized. Click a row to read and reply, or open its terminal in Orca. Drag the status bar to move the pill.'
+              'Shows terminal and chat status above other apps, even when Orca is minimized. Click a row to read the latest message, reply, or open the session. Drag the status bar to move the pill.'
             )}
           </p>
         </div>
@@ -46,7 +46,7 @@ export function PtyFloatPillExperimentalSetting({
           checked={enabled}
           aria-label={t(
             'auto.components.settings.ExperimentalPane.ptyFloatPill.toggleLabel',
-            'Toggle terminal status pill'
+            'Toggle session status pill'
           )}
           onCheckedChange={() => void updateSettings({ experimentalPtyFloatPill: !enabled })}
         />

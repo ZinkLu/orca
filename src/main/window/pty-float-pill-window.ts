@@ -90,7 +90,7 @@ export function createPtyFloatPillWindow(
     y: Math.round(saved?.y ?? area.y + EDGE_GAP),
     width: 304,
     height: 48,
-    title: 'Orca — Terminal status',
+    title: 'Orca — Session status',
     show: false,
     frame: false,
     transparent: true,

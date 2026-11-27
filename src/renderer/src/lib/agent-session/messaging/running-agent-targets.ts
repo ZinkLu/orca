@@ -5,6 +5,7 @@ import type {
   AgentType
 } from '../../../../../shared/agent-status/contracts/agent-status-types'
 import type { TerminalTab } from '../../../../../shared/workspace-layout/terminal-tab-types'
+import type { Tab } from '../../../../../shared/workspace-layout/tab-groups/tab-types'
 import { isRemoteRuntimePtyId } from '../../../../../shared/remote-runtime/remote-runtime-pty-id'
 import { makePaneKey, parsePaneKey } from '../../../../../shared/workspace-layout/stable-pane-id'
 import { structuredAgentSessionPaneKey } from '../../../../../shared/agent-session/view/structured-agent-session-projection'
@@ -166,23 +167,34 @@ function deriveStructuredAgentSendTargets(
     if ((entry !== null) !== (status === 'with-status')) {
       continue
     }
-    const disabledReason =
-      entry?.state === 'blocked' || entry?.state === 'waiting'
-        ? 'Agent needs permission'
-        : undefined
-    targets.push({
-      kind: 'structured-session',
-      paneKey,
-      tabId: tab.id,
-      sessionId: tab.entityId,
-      agentType: tab.agentSessionAgent,
-      title: tab.customLabel?.trim() || tab.label,
-      entry,
-      status: disabledReason ? 'disabled' : 'eligible',
-      ...(disabledReason ? { disabledReason } : {})
-    })
+    const target = deriveStructuredAgentSendTarget(tab, entry)
+    if (target) {
+      targets.push(target)
+    }
   }
   return targets
+}
+
+export function deriveStructuredAgentSendTarget(
+  tab: Tab,
+  entry: AgentStatusEntry | null
+): StructuredAgentSendTarget | null {
+  if (!isStructuredTab(tab) || !tab.agentSessionAgent) {
+    return null
+  }
+  const disabledReason =
+    entry?.state === 'blocked' || entry?.state === 'waiting' ? 'Agent needs permission' : undefined
+  return {
+    kind: 'structured-session',
+    paneKey: structuredAgentSessionPaneKey(tab.id, tab.entityId),
+    tabId: tab.id,
+    sessionId: tab.entityId,
+    agentType: tab.agentSessionAgent,
+    title: tab.customLabel?.trim() || tab.label,
+    entry,
+    status: disabledReason ? 'disabled' : 'eligible',
+    ...(disabledReason ? { disabledReason } : {})
+  }
 }
 
 // The tab title is the active surface's; it belongs to this leaf only when the tab has no split.

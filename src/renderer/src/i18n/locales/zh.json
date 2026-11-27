@@ -8694,10 +8694,10 @@
             "toggleLabel": "切换共享 Codex 服务器"
           },
           "ptyFloatPill": {
-            "title": "终端状态悬浮窗",
-            "description": "在桌面查看终端状态、最新消息并回复。",
-            "copy": "在其他应用上方显示终端状态和最新消息，Orca 最小化后仍可查看。点击一行可阅读和回复，也可以打开对应终端。拖动状态栏可移动悬浮窗。",
-            "toggleLabel": "切换终端状态悬浮窗"
+            "title": "会话状态悬浮窗",
+            "description": "在桌面显示终端和聊天的状态、最新消息，并可直接回复。",
+            "copy": "在其他应用上方显示终端和聊天状态，Orca 最小化后仍可查看。点击一行可阅读最新消息、回复或打开对应会话。拖动状态栏可移动悬浮窗。",
+            "toggleLabel": "切换会话状态悬浮窗"
           }
         },
         "FloatingWorkspacePane": {
@@ -10868,8 +10868,8 @@
               "memory": "内存"
             },
             "ptyFloatPill": {
-              "title": "终端状态悬浮窗",
-              "description": "在桌面查看终端状态、最新消息并回复。"
+              "title": "会话状态悬浮窗",
+              "description": "在桌面显示终端和聊天的状态、最新消息，并可直接回复。"
             }
           }
         },
@@ -20047,21 +20047,22 @@
         "wslDistroHint": "这台电脑上的 Linux 发行版"
       },
       "ptyFloatPill": {
-        "toggle": "终端状态",
+        "toggle": "会话状态",
         "resetPosition": "重置悬浮窗口位置",
-        "resetPositionDescription": "将终端状态悬浮窗移到鼠标所在屏幕的顶部。",
+        "resetPositionDescription": "将会话状态悬浮窗移到鼠标所在屏幕的顶部。",
         "floatingWorkspace": "浮动工作区",
         "sessionChanged": "此会话已变化，请从列表重新打开。",
-        "noAgent": "打开终端以继续此会话。",
+        "noAgent": "打开会话以继续。",
         "sent": "消息已发送",
-        "unconfirmed": "无法确认消息是否送达，请先查看终端再发送。",
+        "unconfirmed": "无法确认消息是否送达，请先查看会话再发送。",
         "sendFailed": "消息未发送，请检查会话后重试。",
-        "back": "返回终端列表",
-        "openTerminal": "打开终端",
+        "back": "返回会话列表",
+        "openTerminal": "打开会话",
         "noMessage": "尚未收到助手消息。",
         "reply": "回复此会话",
         "sending": "发送中…",
-        "send": "发送"
+        "send": "发送",
+        "empty": "没有打开的会话"
       }
     },
     "i18n": {

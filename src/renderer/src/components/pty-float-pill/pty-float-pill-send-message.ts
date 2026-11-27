@@ -4,23 +4,42 @@ import { activeAgentNotesSendFailureMessage } from '@/lib/agent-session/messagin
 import { agentSendDisabledReasonLabel } from '@/lib/agent-session/messaging/agent-send-disabled-reason-label'
 import { makePaneKey } from '../../../../shared/workspace-layout/stable-pane-id'
 import { matchesPtyFloatPillMessageTarget } from '../../../../shared/terminal/pty-float-pill-message-target'
+import type { AgentMessageTarget } from '@/lib/agent-session/messaging/agent-message-target'
 import type {
   PtyFloatPillMessage,
+  PtyFloatPillConversation,
   PtyFloatPillSendResult
 } from '../../../../shared/terminal/pty-float-pill-snapshot'
-import { ptyFloatPillConversation } from './pty-float-pill-conversation'
+import {
+  ptyFloatPillConversation,
+  ptyFloatPillStructuredConversation
+} from './pty-float-pill-conversation'
 
 export async function sendPtyFloatPillMessage(
   message: PtyFloatPillMessage
 ): Promise<PtyFloatPillSendResult> {
   const state = useAppStore.getState()
-  const tab = state.tabsByWorktree[message.worktreeId]?.find((tab) => tab.id === message.tabId)
-  const entry = state.agentStatusByPaneKey.get(makePaneKey(message.tabId, message.leafId))
-  if (!tab || !entry || (entry.worktreeId && entry.worktreeId !== message.worktreeId)) {
-    return { status: 'failed' }
+  let current: PtyFloatPillConversation | null
+  let target: AgentMessageTarget
+  if (message.kind === 'structured-session') {
+    const tab = state.unifiedTabsByWorktree[message.worktreeId]?.find(
+      (tab) => tab.id === message.tabId
+    )
+    if (!tab || tab.entityId !== message.sessionId) {
+      return { status: 'failed' }
+    }
+    current = ptyFloatPillStructuredConversation(state, tab)
+    target = { kind: 'structured-session', sessionId: tab.entityId }
+  } else {
+    const tab = state.tabsByWorktree[message.worktreeId]?.find((tab) => tab.id === message.tabId)
+    const entry = state.agentStatusByPaneKey.get(makePaneKey(message.tabId, message.leafId))
+    if (!tab || !entry || (entry.worktreeId && entry.worktreeId !== message.worktreeId)) {
+      return { status: 'failed' }
+    }
+    current = ptyFloatPillConversation(state, tab, { leafId: message.leafId, entry })
+    target = { kind: 'terminal', tabId: message.tabId, leafId: message.leafId }
   }
-  const current = ptyFloatPillConversation(state, tab, { leafId: message.leafId, entry })
-  if (!matchesPtyFloatPillMessageTarget(current, message)) {
+  if (!current || !matchesPtyFloatPillMessageTarget(current, message)) {
     return { status: 'failed' }
   }
   if (current.disabledReason) {
@@ -28,7 +47,7 @@ export async function sendPtyFloatPillMessage(
   }
   const result = await sendMessageToAgent({
     worktreeId: message.worktreeId,
-    target: { kind: 'terminal', tabId: message.tabId, leafId: message.leafId },
+    target,
     prompt: message.prompt
   })
   return result.status === 'sent'

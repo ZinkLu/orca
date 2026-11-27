@@ -8,6 +8,8 @@ export type PtyFloatPillEntry = {
 }
 
 export type PtyFloatPillConversation = {
+  kind: 'terminal' | 'structured-session'
+  executionHostId?: string | null
   leafId: string
   ptyId: string | null
   sessionId: string | null
@@ -24,8 +26,10 @@ export type PtyFloatPillGroup = {
 export type PtyFloatPillTarget = { worktreeId: string; tabId: string; leafId?: string }
 
 export type PtyFloatPillMessage = PtyFloatPillTarget & {
+  kind: PtyFloatPillConversation['kind']
+  executionHostId?: string | null
   leafId: string
-  ptyId: string
+  ptyId: string | null
   sessionId: string | null
   prompt: string
 }

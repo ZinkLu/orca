@@ -6,11 +6,11 @@ export function getPtyFloatPillSearchEntry(): SettingsSearchEntry {
   return {
     title: translate(
       'auto.components.settings.experimental.search.ptyFloatPill.title',
-      'Terminal status pill'
+      'Session status pill'
     ),
     description: translate(
       'auto.components.settings.experimental.search.ptyFloatPill.description',
-      'Desktop pill with terminal status, latest messages, and replies.'
+      'Desktop pill with terminal and chat status, latest messages, and replies.'
     ),
     keywords: [
       ...translateSearchKeyword(

@@ -25,9 +25,6 @@ export function PtyFloatPill({
   detail?: React.ReactNode
 }): React.JSX.Element | null {
   const t = useTranslate()
-  if (groups.length === 0) {
-    return null
-  }
   const { total, counts } = summarizePtyFloatPillGroups(groups)
 
   return (
@@ -44,7 +41,7 @@ export function PtyFloatPill({
           variant="ghost-inset"
           size="pill"
           aria-expanded={expanded}
-          aria-label={t('auto.components.ptyFloatPill.toggle', 'Terminal status')}
+          aria-label={t('auto.components.ptyFloatPill.toggle', 'Session status')}
           onClick={onToggle}
           className="shrink-0"
         >
@@ -66,6 +63,11 @@ export function PtyFloatPill({
       <div hidden={!expanded}>
         {detail ?? (
           <div className="scrollbar-sleek max-h-80 overflow-y-auto border-t border-border py-1">
+            {total === 0 ? (
+              <p className="px-3 py-2 text-xs text-muted-foreground">
+                {t('auto.components.ptyFloatPill.empty', 'No open sessions')}
+              </p>
+            ) : null}
             {groups.map((group) => {
               const name =
                 group.name ??
