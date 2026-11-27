@@ -11,6 +11,7 @@ import {
   closePtyFloatPillWindow,
   createPtyFloatPillWindow,
   getPtyFloatPillWindow,
+  resetPtyFloatPillPosition,
   resizePtyFloatPill
 } from '../../window/pty-float-pill-window'
 import { safelyRevealWindow } from '../../window/activation/focus-existing-window'
@@ -64,6 +65,13 @@ export function registerPtyFloatPillHandlers(store: Store): void {
       event.sender.send('ptyFloatPill:snapshot', groups)
       sendToTrustedUIRenderer('ptyFloatPill:snapshotRequested', null)
     }
+  })
+  ipcMain.handle('ptyFloatPill:resetPosition', async (event) => {
+    if (getTrustedUIRendererWindow()?.webContents !== event.sender) {
+      return
+    }
+    await resetPtyFloatPillPosition(nativeSettings)
+    sendToTrustedUIRenderer('ptyFloatPill:snapshotRequested', null)
   })
   ipcMain.handle('ptyFloatPill:resize', (event, value: unknown) => {
     if (!isPill(event)) {

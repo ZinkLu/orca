@@ -6,6 +6,7 @@ import {
   Globe,
   PanelRightClose,
   Play,
+  RotateCcw,
   SquareTerminal,
   Trash2
 } from 'lucide-react'
@@ -19,6 +20,7 @@ import {
 import { translate } from '@/i18n/i18n'
 import { createLocalizedCatalog } from '@/i18n/localized-catalog'
 import { getNativeChatSplitQuickActions } from './native-chat-split-quick-actions'
+import { isWebClientLocation } from '@/app-shell/platform/web-client-location'
 
 export type CmdJQuickActionRunResult =
   | { status: 'ok' }
@@ -177,6 +179,37 @@ export const getCmdJQuickActions = createLocalizedCatalog((): CmdJQuickAction[] 
     run: (ctx) => runWorkspaceAction(ctx, ctx.openNewTerminalTab)
   },
   ...getNativeChatSplitQuickActions(),
+  {
+    id: 'reset-pty-float-pill-position',
+    kind: 'action',
+    title: translate(
+      'auto.components.ptyFloatPill.resetPosition',
+      'Reset floating window position'
+    ),
+    description: translate(
+      'auto.components.ptyFloatPill.resetPositionDescription',
+      'Move the terminal status pill to the top of the screen containing the pointer.'
+    ),
+    icon: RotateCcw,
+    verbKeywords: [
+      'float pill',
+      'reset pill',
+      translate('auto.components.ptyFloatPill.resetPosition', 'Reset floating window position')
+    ],
+    isAvailable: () =>
+      isWebClientLocation()
+        ? { available: false, reason: 'client-action-unsupported' }
+        : { available: true },
+    run: async () => {
+      if (isWebClientLocation()) {
+        return { status: 'unavailable', reason: 'client-action-unsupported' }
+      }
+      const { resetPtyFloatPillPosition } =
+        await import('../pty-float-pill/reset-pty-float-pill-position')
+      await resetPtyFloatPillPosition()
+      return { status: 'ok' }
+    }
+  },
   {
     id: CREATE_WORKSPACE_QUICK_ACTION_ID,
     kind: 'action',

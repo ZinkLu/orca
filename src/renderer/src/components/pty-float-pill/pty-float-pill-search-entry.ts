@@ -14,6 +14,10 @@ export function getPtyFloatPillSearchEntry(): SettingsSearchEntry {
     ),
     keywords: [
       ...translateSearchKeyword(
+        'auto.components.ptyFloatPill.resetPosition',
+        'Reset floating window position'
+      ),
+      ...translateSearchKeyword(
         'auto.components.settings.experimental.search.0d24759f14',
         'experimental'
       ),

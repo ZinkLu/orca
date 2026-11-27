@@ -46,6 +46,25 @@ export function resizePtyFloatPill(size: PtyFloatPillSize): void {
   }
 }
 
+export async function resetPtyFloatPillPosition(
+  nativeSettings: NativeSettingsProjection
+): Promise<void> {
+  const window = getPtyFloatPillWindow()
+  const area = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
+  const bounds = window?.getBounds()
+  const width = Math.min(bounds?.width ?? 304, area.width)
+  const height = Math.min(bounds?.height ?? 48, area.height)
+  const position = {
+    x: Math.round(area.x + (area.width - width) / 2),
+    y: Math.min(area.y + EDGE_GAP, area.y + area.height - height)
+  }
+  if (window) {
+    window.setBounds({ ...position, width, height })
+    presentPill()
+  }
+  await nativeSettings.requestCoreWrite({ kind: 'ui', updates: { ptyFloatPillPosition: position } })
+}
+
 export function createPtyFloatPillWindow(
   nativeSettings: NativeSettingsProjection,
   owner: WebContents

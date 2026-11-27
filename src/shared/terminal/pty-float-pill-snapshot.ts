@@ -48,6 +48,7 @@ export type PtyFloatPillApi = {
   onSnapshot: (callback: (groups: readonly PtyFloatPillGroup[]) => void) => () => void
   onSnapshotRequested: (callback: () => void) => () => void
   resize: (size: PtyFloatPillSize) => Promise<void>
+  resetPosition: () => Promise<void>
   revealTerminal: (target: PtyFloatPillTarget) => Promise<void>
   onRevealTerminal: (callback: (target: PtyFloatPillTarget) => void) => () => void
   sendMessage: (message: PtyFloatPillMessage) => Promise<PtyFloatPillSendResult>

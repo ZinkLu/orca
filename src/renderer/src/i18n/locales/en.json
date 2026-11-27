@@ -21000,6 +21000,8 @@
       },
       "ptyFloatPill": {
         "toggle": "Terminal status",
+        "resetPosition": "Reset floating window position",
+        "resetPositionDescription": "Move the terminal status pill to the top of the screen containing the pointer.",
         "floatingWorkspace": "Floating workspace",
         "sessionChanged": "This session changed. Reopen it from the list.",
         "noAgent": "Open the terminal to continue this session.",

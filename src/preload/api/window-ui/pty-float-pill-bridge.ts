@@ -10,6 +10,7 @@ export const ptyFloatPillApi: PtyFloatPillApi = {
   publishSnapshot: (groups) => ipcRenderer.invoke('ptyFloatPill:publishSnapshot', groups),
   requestSnapshot: () => ipcRenderer.invoke('ptyFloatPill:requestSnapshot'),
   resize: (size) => ipcRenderer.invoke('ptyFloatPill:resize', size),
+  resetPosition: () => ipcRenderer.invoke('ptyFloatPill:resetPosition'),
   revealTerminal: (target) => ipcRenderer.invoke('ptyFloatPill:revealTerminal', target),
   sendMessage: (message) => ipcRenderer.invoke('ptyFloatPill:sendMessage', message),
   replyToMessage: (reply) => ipcRenderer.send('ptyFloatPill:messageReply', reply),

@@ -20048,6 +20048,8 @@
       },
       "ptyFloatPill": {
         "toggle": "终端状态",
+        "resetPosition": "重置悬浮窗口位置",
+        "resetPositionDescription": "将终端状态悬浮窗移到鼠标所在屏幕的顶部。",
         "floatingWorkspace": "浮动工作区",
         "sessionChanged": "此会话已变化，请从列表重新打开。",
         "noAgent": "打开终端以继续此会话。",

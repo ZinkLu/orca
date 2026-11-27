@@ -2,8 +2,11 @@ import type { GlobalSettings } from '../../../../shared/settings/global-settings
 import { useTranslate } from '@/i18n/use-translate'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import { SearchableSetting } from '../settings/section-layout/SearchableSetting'
 import { getExperimentalSearchEntry } from '../settings/advanced/experimental-search'
+import { resetPtyFloatPillPosition } from './reset-pty-float-pill-position'
 
 export function PtyFloatPillExperimentalSetting({
   settings,
@@ -48,6 +51,18 @@ export function PtyFloatPillExperimentalSetting({
           onCheckedChange={() => void updateSettings({ experimentalPtyFloatPill: !enabled })}
         />
       </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() =>
+          void resetPtyFloatPillPosition().catch((error: unknown) => {
+            toast.error(error instanceof Error ? error.message : String(error))
+          })
+        }
+      >
+        {t('auto.components.ptyFloatPill.resetPosition', 'Reset floating window position')}
+      </Button>
     </SearchableSetting>
   )
 }
