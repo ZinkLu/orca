@@ -2,6 +2,7 @@ import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import type {
   PtyFloatPillApi,
   PtyFloatPillGroup,
+  PtyFloatPillMessageRequest,
   PtyFloatPillTarget
 } from '../../../shared/terminal/pty-float-pill-snapshot'
 
@@ -10,6 +11,14 @@ export const ptyFloatPillApi: PtyFloatPillApi = {
   requestSnapshot: () => ipcRenderer.invoke('ptyFloatPill:requestSnapshot'),
   resize: (size) => ipcRenderer.invoke('ptyFloatPill:resize', size),
   revealTerminal: (target) => ipcRenderer.invoke('ptyFloatPill:revealTerminal', target),
+  sendMessage: (message) => ipcRenderer.invoke('ptyFloatPill:sendMessage', message),
+  replyToMessage: (reply) => ipcRenderer.send('ptyFloatPill:messageReply', reply),
+  onSendMessage: (callback) => {
+    const listener = (_event: IpcRendererEvent, request: PtyFloatPillMessageRequest): void =>
+      callback(request)
+    ipcRenderer.on('ptyFloatPill:sendMessageRequested', listener)
+    return () => ipcRenderer.removeListener('ptyFloatPill:sendMessageRequested', listener)
+  },
   onSnapshot: (callback) => {
     const listener = (_event: IpcRendererEvent, groups: PtyFloatPillGroup[]): void =>
       callback(groups)

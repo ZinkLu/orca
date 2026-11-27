@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { acceptedAgentStatuses } from '@/store/slices/agent-status/status-ownership/accepted-agent-statuses'
 import { makeFolderWorkspace } from '@/store/folder-workspaces/folder-workspace.test-fixture'
 import { makeWorktree } from '@/store/slices/worktrees/worktree.test-fixture'
@@ -7,6 +8,7 @@ import { defineFixture } from '../../component-fixtures/component-fixture'
 import type { AgentStatusEntry } from '../../../../shared/agent-status/contracts/agent-status-types'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/workspace/identity/floating-workspace-id'
 import { PtyFloatPill } from './PtyFloatPill'
+import { PtyFloatPillDetail } from './PtyFloatPillDetail'
 import { createPtyFloatPillGroupsSelector } from './pty-float-pill-groups'
 
 const checkout = makeWorktree({ id: 'pill-repo::/preview/orca', repoId: 'pill-repo' })
@@ -47,7 +49,13 @@ function agentStatuses() {
               prompt: '',
               updatedAt: now,
               stateStartedAt: now,
-              stateHistory: []
+              stateHistory: [],
+              lastAssistantMessage:
+                index === 0
+                  ? '已完成桌面悬浮窗的消息预览。\n\n状态后会显示最新回复，点击可以展开详情，并直接向这个会话发送后续指令。\n\n接下来会验证远程终端的消息发送和权限提示。'
+                  : index === 1
+                    ? '需要你确认是否执行 pnpm install。'
+                    : 'Changelog draft is ready for review.'
             } satisfies AgentStatusEntry
           ] as const
         ]
@@ -65,6 +73,17 @@ function store() {
     worktreesByRepo: { 'pill-repo': [checkout, review] },
     folderWorkspaces: [folder],
     tabsByWorktree,
+    terminalLayoutsByTabId: Object.fromEntries(
+      terminals.map(([tabId, , , live], index) => [
+        tabId,
+        {
+          root: null,
+          activeLeafId: leafId(index),
+          expandedLeafId: null,
+          ptyIdsByLeafId: live ? { [leafId(index)]: `pty-${tabId}` } : {}
+        }
+      ])
+    ),
     ptyIdsByTabId: Object.fromEntries(
       terminals.flatMap(([tabId, , , live]) => (live ? [[tabId, [`pty-${tabId}`]]] : []))
     )
@@ -73,7 +92,7 @@ function store() {
 
 function pill(expanded: boolean) {
   return defineFixture({
-    width: 320,
+    width: 400,
     store: store(),
     setup: () => {
       useAppStore.setState({ agentStatusByPaneKey: agentStatuses() })
@@ -84,7 +103,7 @@ function pill(expanded: boolean) {
           groups={createPtyFloatPillGroupsSelector()(useAppStore.getState())}
           expanded={expanded}
           onToggle={() => {}}
-          onReveal={() => {}}
+          onSelect={() => {}}
         />
       </div>
     )
@@ -93,3 +112,39 @@ function pill(expanded: boolean) {
 
 export const expanded = pill(true)
 export const collapsed = pill(false)
+
+function DetailFixture(): React.JSX.Element {
+  const [draft, setDraft] = useState('继续验证远程终端，完成后告诉我结果。')
+  const groups = createPtyFloatPillGroupsSelector()(useAppStore.getState())
+  const group = groups.find((group) => group.worktreeId === checkout.id)!
+  const entry = group.entries[0]
+  return (
+    <div className="w-max p-2">
+      <PtyFloatPill
+        groups={groups}
+        expanded
+        onToggle={() => {}}
+        onSelect={() => {}}
+        detail={
+          <PtyFloatPillDetail
+            entry={entry}
+            workspaceName="orca"
+            available
+            draft={draft}
+            onDraftChange={setDraft}
+            onBack={() => {}}
+            onReveal={() => {}}
+            onSend={async () => ({ status: 'sent' })}
+          />
+        }
+      />
+    </div>
+  )
+}
+
+export const detail = defineFixture({
+  width: 400,
+  store: store(),
+  setup: () => useAppStore.setState({ agentStatusByPaneKey: agentStatuses() }),
+  render: () => <DetailFixture />
+})

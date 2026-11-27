@@ -23,7 +23,7 @@ export function PtyFloatPillExperimentalSetting({
       title={title}
       description={t(
         'auto.components.settings.ExperimentalPane.ptyFloatPill.description',
-        'Desktop pill that stays above other apps and shows terminal status.'
+        'Desktop pill with terminal status, latest messages, and replies.'
       )}
       keywords={getExperimentalSearchEntry().ptyFloatPill.keywords}
       className="space-y-3 py-3"
@@ -35,7 +35,7 @@ export function PtyFloatPillExperimentalSetting({
           <p className="text-xs text-muted-foreground">
             {t(
               'auto.components.settings.ExperimentalPane.ptyFloatPill.copy',
-              'Shows terminal status in a separate window that stays visible when Orca is minimized. Click a terminal to return to it in Orca, use the arrow to collapse the list, and drag the status bar to move the pill.'
+              'Shows terminal status and latest messages above other apps, even when Orca is minimized. Click a row to read and reply, or open its terminal in Orca. Drag the status bar to move the pill.'
             )}
           </p>
         </div>

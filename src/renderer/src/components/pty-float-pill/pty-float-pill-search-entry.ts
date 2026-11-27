@@ -10,7 +10,7 @@ export function getPtyFloatPillSearchEntry(): SettingsSearchEntry {
     ),
     description: translate(
       'auto.components.settings.experimental.search.ptyFloatPill.description',
-      'Desktop pill that stays above other apps and shows terminal status.'
+      'Desktop pill with terminal status, latest messages, and replies.'
     ),
     keywords: [
       ...translateSearchKeyword(

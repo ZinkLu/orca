@@ -3,6 +3,7 @@ import { useAppStore } from '@/store'
 import { revealTerminalPane } from '@/lib/workspace/activation/reveal-terminal-pane'
 import { createPtyFloatPillGroupsSelector } from './pty-float-pill-groups'
 import type { PtyFloatPillGroup } from '../../../../shared/terminal/pty-float-pill-snapshot'
+import { sendPtyFloatPillMessage } from './pty-float-pill-send-message'
 
 function subscribePtyFloatPillBridge(): () => void {
   const api = window.api.ptyFloatPill
@@ -32,7 +33,7 @@ function subscribePtyFloatPillBridge(): () => void {
     published = null
     publish()
   })
-  const offReveal = api.onRevealTerminal(({ worktreeId, tabId }) => {
+  const offReveal = api.onRevealTerminal(({ worktreeId, tabId, leafId }) => {
     const state = useAppStore.getState()
     if (!state.tabsByWorktree[worktreeId]?.some((tab) => tab.id === tabId)) {
       return
@@ -40,15 +41,22 @@ function subscribePtyFloatPillBridge(): () => void {
     revealTerminalPane({
       worktreeId,
       tabId,
-      leafId: state.terminalLayoutsByTabId[tabId]?.activeLeafId ?? null,
+      leafId: leafId ?? state.terminalLayoutsByTabId[tabId]?.activeLeafId ?? null,
       executionHostId: null
     })
+  })
+  const offSend = api.onSendMessage((request) => {
+    void sendPtyFloatPillMessage(request).then(
+      (result) => api.replyToMessage({ ...result, requestId: request.requestId }),
+      () => api.replyToMessage({ status: 'unconfirmed', requestId: request.requestId })
+    )
   })
   publish()
   return () => {
     unsubscribe()
     offRequested()
     offReveal()
+    offSend()
     if (timer) {
       clearTimeout(timer)
     }

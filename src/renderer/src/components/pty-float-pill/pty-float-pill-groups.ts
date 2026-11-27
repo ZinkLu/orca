@@ -6,6 +6,8 @@ import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/workspace/iden
 import { resolveTerminalTabTitle } from '../../../../shared/workspace-layout/tab-groups/tab-title-resolution'
 import { compareDisplayName } from '../../../../shared/worktree/display-name-order'
 import type { PtyFloatPillGroup } from '../../../../shared/terminal/pty-float-pill-snapshot'
+import { matchesPtyFloatPillMessageTarget } from '../../../../shared/terminal/pty-float-pill-message-target'
+import { createPtyFloatPillConversationSelector } from './pty-float-pill-conversation'
 
 type TabStatusSelector = ReturnType<typeof createTerminalTabActivityStatusSelector>
 
@@ -34,7 +36,13 @@ function sameGroups(a: readonly PtyFloatPillGroup[], b: readonly PtyFloatPillGro
           return (
             entry.tabId === otherEntry.tabId &&
             entry.title === otherEntry.title &&
-            entry.status === otherEntry.status
+            entry.status === otherEntry.status &&
+            (entry.conversation === otherEntry.conversation ||
+              (!!entry.conversation &&
+                !!otherEntry.conversation &&
+                matchesPtyFloatPillMessageTarget(entry.conversation, otherEntry.conversation) &&
+                entry.conversation.lastMessage === otherEntry.conversation.lastMessage &&
+                entry.conversation.disabledReason === otherEntry.conversation.disabledReason))
           )
         })
       )
@@ -47,6 +55,7 @@ export function createPtyFloatPillGroupsSelector(): (
   state: AppState
 ) => readonly PtyFloatPillGroup[] {
   const statusSelectors = new Map<string, TabStatusSelector>()
+  const selectConversation = createPtyFloatPillConversationSelector()
   let previous: readonly PtyFloatPillGroup[] = []
   return (state) => {
     const generatedTitlesEnabled = state.settings?.tabAutoGenerateTitle === true
@@ -71,7 +80,8 @@ export function createPtyFloatPillGroupsSelector(): (
           return {
             tabId: tab.id,
             title: resolveTerminalTabTitle(tab, generatedTitlesEnabled, tab.title),
-            status: selectStatus(state, tab)
+            status: selectStatus(state, tab),
+            conversation: selectConversation(state, tab)
           }
         })
       groups.push({ worktreeId, name, entries })

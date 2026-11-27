@@ -8692,6 +8692,12 @@
             "description": "配置相同的 Codex 聊天共用一个后台进程，而不是每个聊天各启动一个",
             "copy": "占用更少内存，新聊天启动更快。如果共享进程崩溃，它的所有聊天都会重新连接。仅对更改后在这台电脑上开始的聊天生效；远程主机和 WSL 主机仍为每个聊天使用一个进程",
             "toggleLabel": "切换共享 Codex 服务器"
+          },
+          "ptyFloatPill": {
+            "title": "终端状态悬浮窗",
+            "description": "在桌面查看终端状态、最新消息并回复。",
+            "copy": "在其他应用上方显示终端状态和最新消息，Orca 最小化后仍可查看。点击一行可阅读和回复，也可以打开对应终端。拖动状态栏可移动悬浮窗。",
+            "toggleLabel": "切换终端状态悬浮窗"
           }
         },
         "FloatingWorkspacePane": {
@@ -10860,6 +10866,10 @@
               "description": "配置相同的 Codex 聊天共用一个后台进程，而不是每个聊天各启动一个",
               "codex": "codex",
               "memory": "内存"
+            },
+            "ptyFloatPill": {
+              "title": "终端状态悬浮窗",
+              "description": "在桌面查看终端状态、最新消息并回复。"
             }
           }
         },
@@ -20035,6 +20045,21 @@
         "noWslDistros": "没有找到 WSL 发行版",
         "wslDistro": "WSL 发行版",
         "wslDistroHint": "这台电脑上的 Linux 发行版"
+      },
+      "ptyFloatPill": {
+        "toggle": "终端状态",
+        "floatingWorkspace": "浮动工作区",
+        "sessionChanged": "此会话已变化，请从列表重新打开。",
+        "noAgent": "打开终端以继续此会话。",
+        "sent": "消息已发送",
+        "unconfirmed": "无法确认消息是否送达，请先查看终端再发送。",
+        "sendFailed": "消息未发送，请检查会话后重试。",
+        "back": "返回终端列表",
+        "openTerminal": "打开终端",
+        "noMessage": "尚未收到助手消息。",
+        "reply": "回复此会话",
+        "sending": "发送中…",
+        "send": "发送"
       }
     },
     "i18n": {
@@ -23523,6 +23548,13 @@
         "finish": "完成",
         "pasteLanded": "登录后，请粘贴最终跳转到的页面地址"
       }
+    },
+    "agentMessage": {
+      "empty": "请输入要发送的消息。",
+      "approvalUnseen": "此 agent 可能正在等待授权，请在本轮结束后发送消息。",
+      "hostUpdateRequired": "请更新此 agent 所在主机上的 Orca，再发送消息。",
+      "notWritable": "此 agent 未接受消息。",
+      "submitFailed": "消息可能已填入终端输入框，但 Orca 未能提交，请先查看终端再发送。"
     }
   },
   "dashboardPopout": {

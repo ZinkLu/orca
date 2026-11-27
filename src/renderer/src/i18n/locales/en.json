@@ -9578,8 +9578,8 @@
           },
           "ptyFloatPill": {
             "title": "Terminal status pill",
-            "description": "Desktop pill that stays above other apps and shows terminal status.",
-            "copy": "Shows terminal status in a separate window that stays visible when Orca is minimized. Click a terminal to return to it in Orca, use the arrow to collapse the list, and drag the status bar to move the pill.",
+            "description": "Desktop pill with terminal status, latest messages, and replies.",
+            "copy": "Shows terminal status and latest messages above other apps, even when Orca is minimized. Click a row to read and reply, or open its terminal in Orca. Drag the status bar to move the pill.",
             "toggleLabel": "Toggle terminal status pill"
           }
         },
@@ -11801,7 +11801,7 @@
             },
             "ptyFloatPill": {
               "title": "Terminal status pill",
-              "description": "Desktop pill that stays above other apps and shows terminal status.",
+              "description": "Desktop pill with terminal status, latest messages, and replies.",
               "status": "status",
               "floating": "floating",
               "pill": "pill",
@@ -21000,7 +21000,18 @@
       },
       "ptyFloatPill": {
         "toggle": "Terminal status",
-        "floatingWorkspace": "Floating workspace"
+        "floatingWorkspace": "Floating workspace",
+        "sessionChanged": "This session changed. Reopen it from the list.",
+        "noAgent": "Open the terminal to continue this session.",
+        "sent": "Message sent",
+        "unconfirmed": "Delivery could not be confirmed. Check the terminal before sending again.",
+        "sendFailed": "Message not sent. Check the session and try again.",
+        "back": "Back to terminals",
+        "openTerminal": "Open terminal",
+        "noMessage": "No assistant message received yet.",
+        "reply": "Reply to agent",
+        "sending": "Sending…",
+        "send": "Send"
       }
     },
     "i18n": {
@@ -24578,6 +24589,13 @@
         "filesStayLine": "Its files stay on {{host}}.",
         "removing": "Removing…"
       }
+    },
+    "agentMessage": {
+      "empty": "Enter a message to send.",
+      "approvalUnseen": "The selected agent may be waiting for approval. Send the message when its turn ends.",
+      "hostUpdateRequired": "Update Orca on the selected agent's host to send it messages.",
+      "notWritable": "The selected agent did not accept the message.",
+      "submitFailed": "The message may already be in the terminal input, but Orca could not submit it. Check the terminal before sending again."
     }
   },
   "dashboardPopout": {

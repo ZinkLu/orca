@@ -4,6 +4,15 @@ export type PtyFloatPillEntry = {
   tabId: string
   title: string
   status: WorktreeStatus
+  conversation?: PtyFloatPillConversation | null
+}
+
+export type PtyFloatPillConversation = {
+  leafId: string
+  ptyId: string | null
+  sessionId: string | null
+  lastMessage: string | null
+  disabledReason: string | null
 }
 
 export type PtyFloatPillGroup = {
@@ -12,7 +21,24 @@ export type PtyFloatPillGroup = {
   entries: PtyFloatPillEntry[]
 }
 
-export type PtyFloatPillTarget = { worktreeId: string; tabId: string }
+export type PtyFloatPillTarget = { worktreeId: string; tabId: string; leafId?: string }
+
+export type PtyFloatPillMessage = PtyFloatPillTarget & {
+  leafId: string
+  ptyId: string
+  sessionId: string | null
+  prompt: string
+}
+
+export const PTY_FLOAT_PILL_MESSAGE_MAX_LENGTH = 16_000
+
+export type PtyFloatPillSendResult = {
+  status: 'sent' | 'failed' | 'unconfirmed'
+  message?: string
+}
+
+export type PtyFloatPillMessageRequest = PtyFloatPillMessage & { requestId: string }
+export type PtyFloatPillMessageReply = PtyFloatPillSendResult & { requestId: string }
 
 export type PtyFloatPillSize = { width: number; height: number }
 
@@ -24,4 +50,7 @@ export type PtyFloatPillApi = {
   resize: (size: PtyFloatPillSize) => Promise<void>
   revealTerminal: (target: PtyFloatPillTarget) => Promise<void>
   onRevealTerminal: (callback: (target: PtyFloatPillTarget) => void) => () => void
+  sendMessage: (message: PtyFloatPillMessage) => Promise<PtyFloatPillSendResult>
+  onSendMessage: (callback: (request: PtyFloatPillMessageRequest) => void) => () => void
+  replyToMessage: (reply: PtyFloatPillMessageReply) => void
 }

@@ -114,42 +114,40 @@ function deriveTerminalAgentSendTargets(
       continue
     }
 
-    const layoutPtyId =
-      state.terminalLayoutsByTabId?.[parsed.tabId]?.ptyIdsByLeafId?.[parsed.leafId] ?? null
-    const ptyId =
-      layoutPtyId && state.ptyIdsByTabId?.[parsed.tabId]?.includes(layoutPtyId) ? layoutPtyId : null
-    let disabledReason: string | undefined
-
-    // Idle agents emit no hooks, so row age never disables a live pane; the host's process/screen check gates the send.
-    const liveTitle = ptyId ? resolveLeafTitle(state, parsed.tabId, parsed.leafId, tab.title) : null
-    const liveTitleStatus = liveTitle === null ? null : detectAgentSendTitleStatus(liveTitle)
-    // An unanswered prompt sends no further hooks and idle titles can persist under open dialogs, so only the agent's next report clears it.
-    if (!ptyId) {
-      disabledReason = 'Terminal is no longer available'
-    } else if (
-      entry.state === 'blocked' ||
-      entry.state === 'waiting' ||
-      liveTitleStatus === 'permission'
-    ) {
-      disabledReason = 'Agent needs permission'
-    } else {
-      disabledReason = hookSilentAgentSendRefusal(state, tab, ptyId, entry, liveTitle)
-    }
-
-    targets.push({
-      kind: 'terminal',
-      paneKey,
-      tabId: parsed.tabId,
-      leafId: parsed.leafId,
-      tab,
-      entry,
-      ptyId,
-      status: disabledReason ? 'disabled' : 'eligible',
-      ...(disabledReason ? { disabledReason } : {})
-    })
+    targets.push(deriveTerminalAgentSendTarget(state, tab, parsed.leafId, entry))
   }
 
   return targets
+}
+
+export function deriveTerminalAgentSendTarget(
+  state: RunningAgentTargetState,
+  tab: TerminalTab,
+  leafId: string,
+  entry: AgentStatusEntry
+): TerminalAgentSendTarget {
+  const layoutPtyId = state.terminalLayoutsByTabId?.[tab.id]?.ptyIdsByLeafId?.[leafId] ?? null
+  const ptyId =
+    layoutPtyId && state.ptyIdsByTabId?.[tab.id]?.includes(layoutPtyId) ? layoutPtyId : null
+  // Idle agents emit no hooks; the host's process/screen check gates the send.
+  const liveTitle = ptyId ? resolveLeafTitle(state, tab.id, leafId, tab.title) : null
+  const liveTitleStatus = liveTitle === null ? null : detectAgentSendTitleStatus(liveTitle)
+  const disabledReason = !ptyId
+    ? 'Terminal is no longer available'
+    : entry.state === 'blocked' || entry.state === 'waiting' || liveTitleStatus === 'permission'
+      ? 'Agent needs permission'
+      : hookSilentAgentSendRefusal(state, tab, ptyId, entry, liveTitle)
+  return {
+    kind: 'terminal',
+    paneKey: makePaneKey(tab.id, leafId),
+    tabId: tab.id,
+    leafId,
+    tab,
+    entry,
+    ptyId,
+    status: disabledReason ? 'disabled' : 'eligible',
+    ...(disabledReason ? { disabledReason } : {})
+  }
 }
 
 // Chats have workspace tabs without PTYs; list only those with status because sidebar reveal/visibility/pills require a row. Notes separately exposes chats the host has not published yet.

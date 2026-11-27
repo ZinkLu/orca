@@ -1,5 +1,9 @@
 import { expect, test } from 'vitest'
-import { admittedPtyFloatPillTarget, PtyFloatPillSnapshotSchema } from './pty-float-pill-payload'
+import {
+  admittedPtyFloatPillTarget,
+  admittedPtyFloatPillMessage,
+  PtyFloatPillSnapshotSchema
+} from './pty-float-pill-payload'
 
 test('a pill can only reveal a tab within its published workspace', () => {
   const groups = PtyFloatPillSnapshotSchema.parse([
@@ -24,4 +28,69 @@ test('a pill can only reveal a tab within its published workspace', () => {
   expect(
     admittedPtyFloatPillTarget(groups, { worktreeId: ['folder:notes'], tabId: 'codex' })
   ).toBeNull()
+})
+
+test('sending is admitted only for the published writable pane and its current session', () => {
+  const groups = PtyFloatPillSnapshotSchema.parse([
+    {
+      worktreeId: 'folder:notes',
+      name: 'Notes',
+      entries: [
+        {
+          tabId: 'codex',
+          title: 'Codex',
+          status: 'done',
+          conversation: {
+            leafId: '00000000-0000-4000-8000-000000000000',
+            ptyId: 'pty-codex',
+            sessionId: 'session-one',
+            lastMessage: 'Ready',
+            disabledReason: null
+          }
+        }
+      ]
+    }
+  ])
+  const message = {
+    worktreeId: 'folder:notes',
+    tabId: 'codex',
+    leafId: '00000000-0000-4000-8000-000000000000',
+    ptyId: 'pty-codex',
+    sessionId: 'session-one',
+    prompt: 'Continue'
+  }
+  expect(admittedPtyFloatPillMessage(groups, message)).toEqual(message)
+  expect(
+    admittedPtyFloatPillTarget(groups, {
+      worktreeId: 'folder:notes',
+      tabId: 'codex',
+      leafId: '00000000-0000-4000-8000-000000000000'
+    })
+  ).toEqual({
+    worktreeId: 'folder:notes',
+    tabId: 'codex',
+    leafId: '00000000-0000-4000-8000-000000000000'
+  })
+  expect(
+    admittedPtyFloatPillTarget(groups, {
+      worktreeId: 'folder:notes',
+      tabId: 'codex',
+      leafId: '00000001-0000-4000-8000-000000000000'
+    })
+  ).toBeNull()
+  expect(admittedPtyFloatPillMessage(groups, { ...message, worktreeId: 'remote:repo' })).toBeNull()
+  expect(
+    admittedPtyFloatPillMessage(groups, {
+      ...message,
+      leafId: '00000001-0000-4000-8000-000000000000'
+    })
+  ).toBeNull()
+  expect(admittedPtyFloatPillMessage(groups, { ...message, ptyId: 'replacement-pty' })).toBeNull()
+  expect(
+    admittedPtyFloatPillMessage(groups, { ...message, sessionId: 'replacement-session' })
+  ).toBeNull()
+  expect(admittedPtyFloatPillMessage(groups, { ...message, prompt: '   ' })).toBeNull()
+  expect(admittedPtyFloatPillMessage(groups, { ...message, prompt: 'x'.repeat(16_001) })).toBeNull()
+  groups[0].entries[0].conversation!.disabledReason = 'Agent needs permission'
+  expect(admittedPtyFloatPillMessage(groups, message)).toBeNull()
 })

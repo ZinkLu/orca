@@ -1,6 +1,11 @@
 import { ipcMain } from 'electron'
 import type { Store } from '../../persistence/loading-store/store'
-import type { PtyFloatPillGroup } from '../../../shared/terminal/pty-float-pill-snapshot'
+import type {
+  PtyFloatPillGroup,
+  PtyFloatPillMessageReply,
+  PtyFloatPillSendResult
+} from '../../../shared/terminal/pty-float-pill-snapshot'
+import { requestRendererReply } from '../../window/renderer-relays/renderer-reply-request'
 import { createStoreNativeSettingsProjection } from '../../core-desktop/native-settings-projection'
 import {
   closePtyFloatPillWindow,
@@ -12,6 +17,7 @@ import { safelyRevealWindow } from '../../window/activation/focus-existing-windo
 import { getTrustedUIRendererWindow, sendToTrustedUIRenderer } from '../ui'
 import {
   admittedPtyFloatPillTarget,
+  admittedPtyFloatPillMessage,
   PtyFloatPillSizeSchema,
   PtyFloatPillSnapshotSchema
 } from './pty-float-pill-payload'
@@ -79,4 +85,29 @@ export function registerPtyFloatPillHandlers(store: Store): void {
       safelyRevealWindow(owner)
     }
   })
+  const sending = new Set<string>()
+  ipcMain.handle(
+    'ptyFloatPill:sendMessage',
+    async (event, value: unknown): Promise<PtyFloatPillSendResult> => {
+      const owner = getTrustedUIRendererWindow()
+      const message = isPill(event) ? admittedPtyFloatPillMessage(groups, value) : null
+      if (!owner || !message || sending.has(message.ptyId)) {
+        return { status: 'failed' }
+      }
+      sending.add(message.ptyId)
+      try {
+        return await requestRendererReply<PtyFloatPillMessageReply>(owner, {
+          requestChannel: 'ptyFloatPill:sendMessageRequested',
+          replyChannel: 'ptyFloatPill:messageReply',
+          payload: message,
+          timeoutMs: 90_000,
+          timeoutError: 'pty_float_pill_send_timeout'
+        })
+      } catch {
+        return { status: 'unconfirmed' }
+      } finally {
+        sending.delete(message.ptyId)
+      }
+    }
+  )
 }

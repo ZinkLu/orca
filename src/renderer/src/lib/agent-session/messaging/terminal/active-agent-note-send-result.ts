@@ -57,7 +57,7 @@ export function activeAgentNotesSendFailureMessage(
     explicitTarget?: boolean
     code?: ActiveAgentNotesSendFailureCode
     /** What was being delivered; Add to chat reuses this wording for a selection. */
-    subject?: 'notes' | 'selection'
+    subject?: 'notes' | 'selection' | 'message'
   } = {}
 ): string {
   const target = options.explicitTarget
@@ -66,7 +66,10 @@ export function activeAgentNotesSendFailureMessage(
   let message: string
   switch (status) {
     case 'empty':
-      message = translate('components.agentNotes.empty', 'No notes to send.')
+      message =
+        options.subject === 'message'
+          ? translate('components.agentMessage.empty', 'Enter a message to send.')
+          : translate('components.agentNotes.empty', 'No notes to send.')
       break
     case 'no-active-terminal':
       message = options.explicitTarget
@@ -98,18 +101,30 @@ export function activeAgentNotesSendFailureMessage(
           )
       break
     case 'approval-unseen':
-      message = translate(
-        'components.agentNotes.approvalUnseen',
-        'The {{target}} agent may be waiting for approval. Send the notes when its turn ends.',
-        { target }
-      )
+      message =
+        options.subject === 'message'
+          ? translate(
+              'components.agentMessage.approvalUnseen',
+              'The selected agent may be waiting for approval. Send the message when its turn ends.'
+            )
+          : translate(
+              'components.agentNotes.approvalUnseen',
+              'The {{target}} agent may be waiting for approval. Send the notes when its turn ends.',
+              { target }
+            )
       break
     case 'host-update-required':
-      message = translate(
-        'components.agentNotes.hostUpdateRequired',
-        "Update Orca on the {{target}} agent's host to send it notes.",
-        { target }
-      )
+      message =
+        options.subject === 'message'
+          ? translate(
+              'components.agentMessage.hostUpdateRequired',
+              "Update Orca on the selected agent's host to send it messages."
+            )
+          : translate(
+              'components.agentNotes.hostUpdateRequired',
+              "Update Orca on the {{target}} agent's host to send it notes.",
+              { target }
+            )
       break
     case 'status-unavailable':
       message = translate(
@@ -127,28 +142,39 @@ export function activeAgentNotesSendFailureMessage(
       break
     case 'not-writable':
       message =
-        options.subject === 'selection'
+        options.subject === 'message'
           ? translate(
-              'components.agentNotes.notWritableSelection',
-              'The {{target}} agent did not accept the selection.',
-              { target }
+              'components.agentMessage.notWritable',
+              'The selected agent did not accept the message.'
             )
-          : translate(
-              'components.agentNotes.notWritable',
-              'The {{target}} agent did not accept the notes.',
-              { target }
-            )
+          : options.subject === 'selection'
+            ? translate(
+                'components.agentNotes.notWritableSelection',
+                'The {{target}} agent did not accept the selection.',
+                { target }
+              )
+            : translate(
+                'components.agentNotes.notWritable',
+                'The {{target}} agent did not accept the notes.',
+                { target }
+              )
       break
     case 'partial-submit-failed':
-      message = options.explicitTarget
-        ? translate(
-            'components.agentNotes.selectedSubmitFailed',
-            'The notes may already be pasted in the selected terminal, but Orca could not submit them.'
-          )
-        : translate(
-            'components.agentNotes.activeSubmitFailed',
-            'The notes may already be pasted in the active terminal, but Orca could not submit them.'
-          )
+      message =
+        options.subject === 'message'
+          ? translate(
+              'components.agentMessage.submitFailed',
+              'The message may already be in the terminal input, but Orca could not submit it. Check the terminal before sending again.'
+            )
+          : options.explicitTarget
+            ? translate(
+                'components.agentNotes.selectedSubmitFailed',
+                'The notes may already be pasted in the selected terminal, but Orca could not submit them.'
+              )
+            : translate(
+                'components.agentNotes.activeSubmitFailed',
+                'The notes may already be pasted in the active terminal, but Orca could not submit them.'
+              )
       break
     case 'unconfirmed':
       message = agentSessionWriteNoticeEnglish(['sendOutcomeLost'])
